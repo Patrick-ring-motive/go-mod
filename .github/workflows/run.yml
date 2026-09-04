@@ -6,4 +6,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: go run .
+      - name: Install gdb
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq gdb
+      - name: Build with debug symbols
+        run: go build -gcflags="all=-N -l" -o dslementary main.go
+      - name: Run under gdb
+        run: |
+          gdb -q -batch \
+            -ex "break main.main" \
+            -ex "run" \
+            -ex "next" \
+            -ex "next" \
+            -ex "next" \
+            -ex "continue" \
+            ./dslementary
